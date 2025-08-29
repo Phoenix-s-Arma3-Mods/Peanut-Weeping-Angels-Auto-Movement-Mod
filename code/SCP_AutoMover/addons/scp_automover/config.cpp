@@ -1,10 +1,18 @@
 class CfgPatches {
     class scp_automover {
-        units[] = {"SCP_AutoMover"};
+        units[] = {"SCP_AutoMover", "SCP_Module_SpawnAutoMover"};
         weapons[] = {};
         requiredAddons[] = {"A3_Data_F", "cba_main"};
         requiredVersion = 2.06;
         author = "Phoenix";
+    };
+};
+
+class CfgFactionClasses {
+    class SCP_ZeusModules {
+        displayName = "SCP Modules";
+        priority = 1;
+        side = 7;
     };
 };
 
@@ -19,6 +27,8 @@ class CfgFunctions {
             class mainLoop {};
             class isLookedAt {};
             class stepTowardPlayer {};
+
+            class spawnAutoMover {};
         };
     };
 };
@@ -26,6 +36,10 @@ class CfgFunctions {
 class CfgEditorCategories {
     class SCP_EditorCategory {
         displayName = "SCP Objects";
+    };
+
+    class SCP_ZeusModules {
+        displayName = "SCP Zeus Modules";
     };
 };
 class CfgEditorSubcategories {

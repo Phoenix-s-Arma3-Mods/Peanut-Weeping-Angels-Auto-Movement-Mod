@@ -24,3 +24,21 @@
 	[0.5, 5, 1.5, 1],
 	1
 ] call CBA_fnc_addSetting;
+
+if (hasInterface) then {
+	[
+		"SCP_UseCustomMoverClass",
+		"CHECKBOX",
+		["Use Custom SCP Mover Object", "Enable this to use a custom object class for SCP Movers."],
+		"SCP AutoMover",
+		false
+	] call CBA_fnc_addSetting;
+
+	[
+		"SCP_CustomMoverClass",
+		"EDITBOX",
+		["Custom SCP Mover Class", "Enter the object className to use instead of the default (e.g., Land_Maroula_F)."],
+		"SCP AutoMover",
+		"Land_Maroula_F"
+	] call CBA_fnc_addSetting;
+};
