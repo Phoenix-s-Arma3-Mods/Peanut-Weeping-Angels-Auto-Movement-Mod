@@ -12,7 +12,7 @@ while {alive _movingObj} do {
 	private _isSeen = false;
 
 	{
-		if ([_movingObj, _x] call PHK_fnc_isLookedAt) exitWith {
+		if ([_movingObj, _x] call PHK_fnc_isLookedAt) then {
 			_isSeen = true;
 		};
 	} forEach _players;
@@ -20,5 +20,27 @@ while {alive _movingObj} do {
 	if (!_isSeen) then {
 		[_movingObj, _players] call PHK_fnc_stepTowardPlayer;
 		sleep _cooldown;
+	};
+
+	if (missionNamespace getVariable ["SCP_EnableKill", true]) then {
+		private _killDistance = missionNamespace getVariable ["SCP_KillDistance", 1.25];
+		private _nearbyPlayers = allPlayers select {
+			alive _x && 
+			{_x distance _movingObj < _killDistance}
+		};
+
+		{
+			private _player = _x;
+			private _isObserved = [_movingObj, _player] call PHK_fnc_isLookedAt;
+
+			if (!_isObserved) then {
+				[_player] call PHK_fnc_showKillImage; // Call the kill image display function when the player dies
+				_player setDamage 1;
+
+				diag_log format ["PHK: SCP Killed Player %1", name _player];
+
+				// if (alive _player) exitWith {}; // If the player is still alive, exit
+			};
+		} forEach _nearbyPlayers;
 	};
 };

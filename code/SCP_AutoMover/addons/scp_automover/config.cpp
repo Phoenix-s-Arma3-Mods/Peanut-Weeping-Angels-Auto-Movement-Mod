@@ -2,7 +2,7 @@ class CfgPatches {
     class scp_automover {
         units[] = {"SCP_AutoMover", "SCP_Module_SpawnAutoMover"};
         weapons[] = {};
-        requiredAddons[] = {"A3_Data_F", "cba_main"};
+        requiredAddons[] = {"A3_Data_F", "cba_main", "cba_xeh"};
         requiredVersion = 2.06;
         author = "Phoenix";
     };
@@ -27,6 +27,7 @@ class CfgFunctions {
             class mainLoop {};
             class isLookedAt {};
             class stepTowardPlayer {};
+            class showKillImage {};
 
             class spawnAutoMover {};
         };

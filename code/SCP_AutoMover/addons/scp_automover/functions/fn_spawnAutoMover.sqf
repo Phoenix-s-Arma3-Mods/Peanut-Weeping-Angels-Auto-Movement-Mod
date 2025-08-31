@@ -25,7 +25,21 @@ if !(isClass (configFile >> "CfgVehicles" >> _objectClass)) then {
     _objectClass = "SCP_AutoMover";
 };
 
-private _obj = createVehicle [_objectClass, _position, [], 0, "CAN_COLLIDE"];
+// raycast to find the actual floor/ground height
+private _rayStart = [_position select 0, _position select 1, 100];
+private _rayEnd = [_position select 0, _position select 1, 0];
+// private _intersect = lineIntersectsSurfaces [_rayStart, _rayEnd]; // should return an array of [hit, object, surface, hitPos]
+private _hitResult = _rayStart nearEntities [_rayEnd, 1];
+
+private _newPos = if (count _hitResult > 0) then {
+    getPosATL (_hitResult select 0);
+} else {
+    _position; // failsafe/fallback in case raycast doesn't return a hit for some reason :shrug:
+};
+
+private _obj = createVehicle [_objectClass, _newPos, [], 0, "CAN_COLLIDE"];
+private _surfaceNormal = surfaceNormal _newPos;
+_obj setVectorUp _surfaceNormal;
 _obj enableSimulationGlobal true;
 // _obj setDir random 360; // add back if we really want random - else i think Zeus is predefining object facing direction when placing
 
