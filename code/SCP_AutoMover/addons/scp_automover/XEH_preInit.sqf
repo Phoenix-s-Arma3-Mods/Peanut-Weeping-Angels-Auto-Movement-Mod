@@ -2,39 +2,33 @@
 	"SCP_Movement_Cooldown",
 	"SLIDER",
 	["Cooldown Time", "Seconds between steps"],
-	"SCP Auto-Mover",
+	["SCP Auto-Mover", "Movement Configuration"],
 	[0.1, 10, 2, 1],
-	1,
+	2,
 	{},
-	true,
-	{},
-	"Movement Configuration"
+	false
 ] call CBA_fnc_addSetting;
 
 [
 	"SCP_Movement_LookSensitivity",
 	"SLIDER",
 	["View Angle Sensitivity", "How directly a player must look to 'freeze' the SCP (higher = stricter)"],
-	"SCP Auto-Mover",
+	["SCP Auto-Mover", "Movement Configuration"],
 	[0.80, 0.99, 0.94, 2],
-	1,
+	2,
 	{},
-	true,
-	{},
-	"Movement Configuration"
+	false
 ] call CBA_fnc_addSetting;
 
 [
 	"SCP_Movement_StepDistance",
 	"SLIDER",
 	["Step Distance", "How far the SCP moves when advancing"],
-	"SCP Auto-Mover",
+	["SCP Auto-Mover", "Movement Configuration"],
 	[0.5, 10, 1.5, 1],
-	1,
+	2,
 	{},
-	true,
-	{},
-	"Movement Configuration"
+	false
 ] call CBA_fnc_addSetting;
 
 if (hasInterface) then {
@@ -42,26 +36,22 @@ if (hasInterface) then {
 		"SCP_UseCustomMoverClass",
 		"CHECKBOX",
 		["Use Custom SCP Mover Object", "Enable this to use a custom object class for SCP Movers."],
-		"SCP Auto-Mover",
+		["SCP Auto-Mover", "Custom Spawn Class Configuration"],
 		false,
-		1,
+		2,
 		{},
-		true,
-		{},
-		"Custom Spawn Class Configuration"
+		false
 	] call CBA_fnc_addSetting;
 
 	[
 		"SCP_CustomMoverClass",
 		"EDITBOX",
 		["Custom SCP Mover Class", "Enter the object className to use instead of the default (e.g., Land_Maroula_F)."],
-		"SCP Auto-Mover",
+		["SCP Auto-Mover", "Custom Spawn Class Configuration"],
 		"Land_Maroula_F",
-		1,
+		2,
 		{},
-		true,
-		{},
-		"Custom Spawn Class Configuration"
+		false
 	] call CBA_fnc_addSetting;
 };
 
@@ -69,13 +59,11 @@ if (hasInterface) then {
 	"SCP_EnableKill",
 	"CHECKBOX",
 	["Enable Kill Behavior", "If enabled, SCP_AutoMover object will kill players when unobserved and within range."],
-	"SCP Auto-Mover",
+	["SCP Auto-Mover", "Killing Feature"],
 	true,
-	1,
+	2,
 	{},
-	true,
-	{},
-	"Killing Feature"
+	false
 ] call CBA_fnc_addSetting;
 
 [
