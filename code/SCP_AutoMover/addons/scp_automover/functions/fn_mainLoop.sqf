@@ -1,3 +1,4 @@
+if (!isServer) exitWith {};
 params ["_movingObj"];
 diag_log format ["PHK: Main loop started for: %1", _movingObj];
 
@@ -34,13 +35,14 @@ while {alive _movingObj} do {
 			private _isObserved = [_movingObj, _player] call PHK_fnc_isLookedAt;
 
 			if (!_isObserved) then {
-				[_player] call PHK_fnc_showKillImage; // Call the kill image display function when the player dies
+				// --- Show image on the victim's CLIENT for N seconds
+				private _dur = 5;  // or read from a CBA setting if you add one
+				[_dur] remoteExec ["PHK_fnc_showKillImage", _player];  // targets that player's machine
+
 				_player setDamage 1;
 
 				diag_log format ["PHK: SCP Killed Player %1", name _player];
-
-				// if (alive _player) exitWith {}; // If the player is still alive, exit
-			};
+				};
 		} forEach _nearbyPlayers;
 	};
 };

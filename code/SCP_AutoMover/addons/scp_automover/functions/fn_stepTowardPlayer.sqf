@@ -1,43 +1,51 @@
 params ["_movableObj", "_players"];
 
-// private _target = [_players, getPosASL _movableObj] call BIS_fnc_nearestPosition; // old
-// if (isNil "_target") exitWith {}; //old
-private _nearestPlayer = nil;
-private _minDistance = 99999;
-private _movableObjPos = getPosASL _movableObj;
+if (isNull _movableObj || {!alive _movableObj}) exitWith {};
 
+private _nearestPlayer = objNull;
+private _minDistance = 1e9;
+private _movableObjPosASL = getPosASL _movableObj;
+
+// pick nearest alive player
 {
-	private _playerPos = getPosASL _x;
-
-	private _distance = _movableObjPos distance _playerPos;
-
-	if (_distance < _minDistance) then {
-		_minDistance = _distance;
-		_nearestPlayer = _x;
+	if (alive _x) then {
+		private _pPosASL = getPosASL _x;
+		private _d = _movableObjPosASL distance _pPosASL;
+		if (_d < _minDistance) then {
+			_minDistance = _d;
+			_nearestPlayer = _x;
+		};
 	};
 } forEach _players;
 
-// if (isNil "_target" || {!(typeOf _target isEqualTo "Man")}) exitWith { diag_log "Error: No valid player target found."; }; //new
-if (isNil "_nearestPlayer" || !alive _nearestPlayer || {!(typeOf _nearestPlayer isKindOf "Man")}) exitWith { diag_log "Error: No valid player target found."; };
-if (!alive _movableObj || !alive _nearestPlayer) exitWith { diag_log "Error: Invalid target or movable object."; };
+if (isNull _nearestPlayer || {!alive _nearestPlayer} || {!(typeOf _nearestPlayer isKindOf "Man")}) exitWith {
+	diag_log "PHK: No valid player target found.";
+};
 
-private _targetPos = getPosASL _nearestPlayer;
+private _targetPosASL = getPosASL _nearestPlayer;
+private _distance = _movableObjPosASL distance _targetPosASL;
 
-// in case not super clear: if moveable_object is > 50 meters from nearest player, teleport to 10 meters to nearest player -> else, move _stepDistance nearer.
-private _distance = _movableObjPos distance _targetPos;
+// >50 m: teleport to 10 m behind target along the line
 if (_distance > 50) then {
-	private _dirVector = _targetPos vectorDiff _movableObjPos;
+	private _dirVector = _targetPosASL vectorDiff _movableObjPosASL;
 	private _teleportVector = vectorNormalized _dirVector vectorMultiply 10;
+	private _teleportPosASL = _targetPosASL vectorDiff _teleportVector;
 
-	private _teleportPos = _targetPos vectorDiff _teleportVector;
+	private _snapT = [_teleportPosASL] call PHK_fnc_projectASLToSurface;
+	_snapT params ["_atlT","_nrmT"];
+	_movableObj setPosATL _atlT;
+	_movableObj setVectorUp _nrmT;
 
-	_movableObj setPosASL _teleportPos; // need to figure out how to validate on weirdly-spawned floors
 } else {
-	private _dirVector = _targetPos vectorDiff _movableObjPos;
+	private _dirVector = _targetPosASL vectorDiff _movableObjPosASL;
 	private _stepDistance = missionNamespace getVariable ["SCP_Movement_StepDistance", 1.5];
+	if (_stepDistance <= 0) exitWith {};
+
 	private _step = vectorNormalized _dirVector vectorMultiply _stepDistance;
+	private _newPosASL = _movableObjPosASL vectorAdd _step;
 
-	private _newPos = _movableObjPos vectorAdd _step;
-
-	_movableObj setPosASL _newPos; // need to figure out how to validate on weirdly-spawned floors
+	private _snapS = [_newPosASL] call PHK_fnc_projectASLToSurface;
+	_snapS params ["_atlS","_nrmS"];
+	_movableObj setPosATL _atlS;
+	_movableObj setVectorUp _nrmS;
 };

@@ -1,47 +1,29 @@
 if (!isServer) exitWith {};
 params ["_logic", "_position", "_activated", "_isCuratorPlaced"];
-
 if (!_activated) exitWith {};
 
-if ((typeName _position) != "ARRAY" || {count _position < 2}) then {
-    _position = getPosASL _logic;
-};
-
-if ((count _position) < 3) then {
-    _position pushBack 0;
+private _xyATL =
+if (_position isEqualType [] && {(count _position) >= 2}) then {
+	// Zeus sometimes sends ASL; we only need XY → treat as XY and project down
+	[_position select 0, _position select 1, 0] vectorDiff [0,0,0]
+} else {
+	getPosATL _logic
 };
 
 private _useCustom = missionNamespace getVariable ["SCP_UseCustomMoverClass", false];
 private _customClass = missionNamespace getVariable ["SCP_CustomMoverClass", ""];
+private _objectClass = if (_useCustom && {_customClass != ""}) then {_customClass} else {"SCP_AutoMover"};
+if !(isClass (configFile >> "CfgVehicles" >> _objectClass)) then { _objectClass = "SCP_AutoMover" };
 
-private _objectClass = if (_useCustom && {_customClass != ""}) then {
-    _customClass
-} else {
-    "SCP_AutoMover"
-};
+private _proj = [[_xyATL select 0, _xyATL select 1, 0], 200, -200] call PHK_fnc_projectDownToSurface;
+_proj params ["_posATL","_normal"];
 
-if !(isClass (configFile >> "CfgVehicles" >> _objectClass)) then {
-    diag_log format ["[SCP_AutoMover] Invalid object class: %1. Falling back to default.", _objectClass];
-    _objectClass = "SCP_AutoMover";
-};
-
-// raycast to find the actual floor/ground height
-private _rayStart = [_position select 0, _position select 1, 100];
-private _rayEnd = [_position select 0, _position select 1, 0];
-// private _intersect = lineIntersectsSurfaces [_rayStart, _rayEnd]; // should return an array of [hit, object, surface, hitPos]
-private _hitResult = _rayStart nearEntities [_rayEnd, 1];
-
-private _newPos = if (count _hitResult > 0) then {
-    getPosATL (_hitResult select 0);
-} else {
-    _position; // failsafe/fallback in case raycast doesn't return a hit for some reason :shrug:
-};
-
-private _obj = createVehicle [_objectClass, _newPos, [], 0, "CAN_COLLIDE"];
-private _surfaceNormal = surfaceNormal _newPos;
-_obj setVectorUp _surfaceNormal;
+private _obj = createVehicle [_objectClass, [0,0,0], [], 0, "CAN_COLLIDE"];
+_obj enableSimulationGlobal false;
+_obj setPosATL _posATL;
+_obj setVectorUp _normal;
+_obj setVelocity [0,0,0];
 _obj enableSimulationGlobal true;
-// _obj setDir random 360; // add back if we really want random - else i think Zeus is predefining object facing direction when placing
 
-[_obj] remoteExec ["PHK_fnc_mainLoop", 0];
+[_obj] remoteExec ["PHK_fnc_mainLoop", 2];
 deleteVehicle _logic;

@@ -1,28 +1,31 @@
-params ["_player"];
+// params [["_duration",5]];
+// if (!hasInterface) exitWith {};
 
-private _showKillImage = missionNamespace getVariable ["SCP_DisplayKillImage", true];
+// // Use titleRsc (topmost title channel). Re-assert a couple times to beat death UI.
+// titleRsc ["PHK_KillOverlay", "PLAIN"];
+// uiSleep 0;
+// titleRsc ["PHK_KillOverlay", "PLAIN"];
+// uiSleep 0.1;
+// titleRsc ["PHK_KillOverlay", "PLAIN"];
 
-if (!_showKillImage) exitWith {};
+// uiSleep (_duration max 0);
 
-private _imagePath = "scp_automover\images\KilledBySCP.paa";
-private _duration = 5;
+// cutText ["", "PLAIN"];
 
-// private _rscPicture = createDialog "RscDisplayEmpty"; // creates a blank dialog RscPicture // old
+params [["_duration",5]];
+if (!hasInterface) exitWith {};
+disableSerialization;
 
-private _display = findDisplay 46; // 46 is the default display for all dialogs (fullscreen)
-private _ctrl = _display displayCtrl 1000;  // 1000 is an arbitrary control ID
+// Create the dialog (sits above scoreboard). Re-assert a couple of times after death UI.
+createDialog "RscDisplayPHK_KillOverlay";
+uiSleep 0;
+createDialog "RscDisplayPHK_KillOverlay";
+uiSleep 0.10;
+createDialog "RscDisplayPHK_KillOverlay";
 
-if (isNull _ctrl) then {
-    _ctrl = _display ctrlCreate ["RscPicture", 1000];
-};
+// Keep it visible for the duration
+uiSleep (_duration max 0);
 
-_ctrl ctrlSetText _imagePath;
-_ctrl ctrlSetPosition [0.4, 0.4, 0.2, 0.2];
-
-_ctrl ctrlShow true;
-
-sleep _duration;
-
-// close the dialog overlay:
-// closeDialog 0;
-_ctrl ctrlShow false;
+// Close if still open
+private _disp = findDisplay 926600;
+if (!isNull _disp) then { closeDialog 0; };
