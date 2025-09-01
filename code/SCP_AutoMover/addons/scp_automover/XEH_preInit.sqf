@@ -82,24 +82,20 @@ if (hasInterface) then {
 	"SCP_KillDistance",
 	"SLIDER",
 	["Kill Distance", "Distance at which the SCP_Object will kill a nearby unobserving player."],
-	"SCP Auto-Mover",
+	["SCP Auto-Mover", "Killing Feature"],
 	[0.5, 5, 1.25, 2],
-	1,
-	{},
-	true,
+	2,
 	{ missionNamespace getVariable ["SCP_EnableKill", true] },
-	"Killing Feature"
+	false
 ] call CBA_fnc_addSetting;
 
 [
     "SCP_DisplayKillImage",
     "CHECKBOX",
     ["Enable Kill Image Display", "If enabled, a brief image will be shown upon player death by SCP_MovableObject."],
-    "SCP Auto-Mover",
+    ["SCP Auto-Mover", "Killing Feature"],
     true,
-    1,
+    2,
     {},
-    true,
-    {},
-    "Killing Feature"
+    false
 ] call CBA_fnc_addSetting;
